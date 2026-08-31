@@ -4,7 +4,7 @@
 set -e
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
-DOCKER_IMAGE_TAG="isles26-e1-v15-swa-final"
+DOCKER_IMAGE_TAG="isles26-strokefusion-final"
 
 docker build \
   --platform=linux/amd64 \

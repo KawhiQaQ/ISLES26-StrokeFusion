@@ -4,9 +4,9 @@ set -euo pipefail
 script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 workspace="${ISLES26_WORKSPACE:-$(cd -- "$script_dir/.." && pwd)}"
 raw_root="$workspace/data/raw/ATLAS3_Training_Raw"
-version_dir="$workspace/versions/V1"
-resenc_plan="$workspace/versions/V2/nnUNetResEncUNetLPlans.json"
-v15_plan="$workspace/versions/V15/nnUNetResEncUNetLPlansV15.json"
+split_dir="$workspace/data/derived/center_grouped_folds"
+resenc_plan="$workspace/plans/resenc_l.json"
+transformer_plan="$workspace/plans/primus_m_local_refinement.json"
 
 conda_exe="${ISLES_CONDA_EXE:-$(command -v conda || true)}"
 if [[ -z "$conda_exe" && -x /opt/conda/bin/conda ]]; then conda_exe=/opt/conda/bin/conda; fi
@@ -24,7 +24,7 @@ export OMP_NUM_THREADS=8
 # exhausted the multiprocessing resource tracker midway through fold0.
 export nnUNet_def_n_proc="${nnUNet_def_n_proc:-2}"
 
-mkdir -p "$nnUNet_raw" "$nnUNet_preprocessed" "$nnUNet_results" "$version_dir"
+mkdir -p "$nnUNet_raw" "$nnUNet_preprocessed" "$nnUNet_results" "$split_dir"
 
 action="${1:-}"
 fold="${2:-0}"
@@ -33,26 +33,26 @@ case "$action" in
   setup)
     python "$workspace/scripts/prepare_nnunet_dataset.py" \
       "$raw_root" "$nnUNet_raw" --dataset-id 26 --dataset-name ISLES26
-    if [[ ! -f "$version_dir/splits_final.json" ]]; then
-      python "$workspace/scripts/build_v1_folds.py" "$raw_root" "$version_dir"
+    if [[ ! -f "$split_dir/splits_final.json" ]]; then
+      python "$workspace/scripts/build_center_grouped_folds.py" "$raw_root" "$split_dir"
     fi
     ;;
   plan)
     nnUNetv2_plan_and_preprocess -d 26 -npfp 8 --no_pp --no_pbar
     install -m 0644 "$resenc_plan" \
       "$nnUNet_preprocessed/Dataset026_ISLES26/nnUNetResEncUNetLPlans.json"
-    install -m 0644 "$v15_plan" \
+    install -m 0644 "$transformer_plan" \
       "$nnUNet_preprocessed/Dataset026_ISLES26/nnUNetResEncUNetLPlansV15.json"
-    cp "$version_dir/splits_final.json" \
+    cp "$split_dir/splits_final.json" \
       "$nnUNet_preprocessed/Dataset026_ISLES26/splits_final.json"
     ;;
   preprocess)
     nnUNetv2_preprocess -d 26 -c 3d_fullres -np 6 --no_pbar
     install -m 0644 "$resenc_plan" \
       "$nnUNet_preprocessed/Dataset026_ISLES26/nnUNetResEncUNetLPlans.json"
-    install -m 0644 "$v15_plan" \
+    install -m 0644 "$transformer_plan" \
       "$nnUNet_preprocessed/Dataset026_ISLES26/nnUNetResEncUNetLPlansV15.json"
-    cp "$version_dir/splits_final.json" \
+    cp "$split_dir/splits_final.json" \
       "$nnUNet_preprocessed/Dataset026_ISLES26/splits_final.json"
     ;;
   smoke)
@@ -69,8 +69,8 @@ case "$action" in
   evaluate)
     prediction_dir="$nnUNet_results/Dataset026_ISLES26/nnUNetTrainer_250epochs__nnUNetPlans__3d_fullres/fold_${fold}/validation"
     python "$workspace/scripts/evaluate_isles26.py" \
-      "$version_dir/manifest_v1.csv" "$prediction_dir" \
-      "$workspace/outputs/V1/fold${fold}/metrics" --fold "$fold" \
+      "$split_dir/manifest.csv" "$prediction_dir" \
+      "$workspace/outputs/baseline/fold${fold}/metrics" --fold "$fold" \
       --label-dir "$nnUNet_raw/Dataset026_ISLES26/labelsTr"
     ;;
   *)

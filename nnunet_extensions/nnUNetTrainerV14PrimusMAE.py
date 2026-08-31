@@ -359,7 +359,13 @@ class nnUNetTrainerV14PrimusMAE(nnUNet_Primus_M_Trainer):
             [
                 sys.executable,
                 str(workspace / "scripts" / "evaluate_isles26.py"),
-                str(workspace / "versions" / "V1" / "manifest_v1.csv"),
+                str(
+                    workspace
+                    / "data"
+                    / "derived"
+                    / "center_grouped_folds"
+                    / "manifest.csv"
+                ),
                 str(prediction_dir),
                 str(metrics_dir),
                 "--fold",

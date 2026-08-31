@@ -1,5 +1,7 @@
 # StrokeFusion: Confidence-Guided Hybrid Segmentation
 
+**English** | [简体中文](README_zh-CN.md)
+
 <p align="center">
   <strong>Official implementation of our ISLES'26 submission</strong><br>
   Native-space ischemic stroke lesion segmentation on T1-weighted MRI
@@ -27,31 +29,22 @@ binary mask; the submitted probability map remains unchanged.
 
 ## Method
 
-```mermaid
-flowchart LR
-    A[RAW native-space T1w] --> P[nnU-Net preprocessing]
-    P --> C[ResEnc-L 3D U-Net<br>E1-SWA]
-    P --> T[Primus-M Transformer<br>V15-SWA]
-    C --> M[Uniform probability mean]
-    T --> M
-    M --> Q[Unchanged probability map]
-    M --> B[Threshold at 0.5]
-    B --> G[Confidence-guided tiny-component cleanup]
-    G --> S[Binary segmentation mask]
-```
-
 | Component | Frozen specification |
 |---|---|
-| **E1-SWA** | nnU-Net v2 ResEnc-L, `160 × 192 × 160` patch, OpenMind-MAE initialization, training-only RASS, weight average of epochs 300/350/400 |
-| **V15-SWA** | Primus-M, `160³` patch, OpenMind-MAE initialization, low-rank local patch-stem refinement, token-presence auxiliary loss, training-only RASS, weight average of epochs 200/250/300 |
-| **Fusion** | Equal foreground-probability average with mirror test-time augmentation |
-| **Binary output** | Threshold `0.5`; remove a 6-connected component only when volume `< 0.002 mL` and maximum foreground probability `< 0.65` |
+| **ResEnc-L RASS SWA** | nnU-Net v2 ResEnc-L, `160 × 192 × 160` patch, OpenMind-MAE initialization, training-only RASS, weight average of epochs 300/350/400 |
+| **Primus-M Local-Refinement SWA** | Primus-M, `160³` patch, OpenMind-MAE initialization, low-rank local patch-stem refinement, token-presence auxiliary loss, training-only RASS, weight average of epochs 200/250/300 |
+| **Probability fusion** | Equal foreground-probability average with mirror test-time augmentation |
+| **Confidence-guided output** | Submit the probability map unchanged; threshold at `0.5`, then remove a 6-connected component only when volume `< 0.002 mL` and maximum foreground probability `< 0.65` |
 
 The Transformer refinement is zero-initialized and operates on the native
 Primus token grid. It adds an `864 → 64 → 864` local residual path containing
 a depthwise `3 × 3 × 3` convolution. A lesion-presence head gates this path and
 adds a `0.05`-weighted balanced token-level binary cross-entropy objective to
 the standard Dice and cross-entropy segmentation loss.
+
+Historical trainer class and checkpoint-directory names are retained
+internally for compatibility with the trained weights. They are implementation
+identifiers, not model names.
 
 ## Repository layout
 
@@ -60,11 +53,11 @@ configs/                 frozen model and training specifications
 docker/                  Grand Challenge inference container
 docs/                    method, evaluation, dataset, and submission details
 external_models/         expected locations for public OpenMind checkpoints
-nnunet_extensions/       custom nnU-Net trainers used by the final method
-reproducibility/         frozen inference metadata and expected hashes
-results/                 compact local validation summaries
+nnunet_extensions/       custom nnU-Net trainers used by StrokeFusion
+plans/                    frozen nnU-Net architecture plans
+reproducibility/         frozen inference metadata
+results/                 compact Preliminary Evaluation summary
 scripts/                 preparation, training, evaluation, and packaging tools
-versions/                architecture plans and experiment provenance
 ```
 
 ## Reproduce the final method
@@ -74,8 +67,7 @@ versions/                architecture plans and experiment provenance
 - Linux x86-64
 - Conda or Miniforge
 - Python 3.11
-- CUDA-capable NVIDIA GPU; 24 GB VRAM is recommended for the frozen training
-  patches and batch sizes
+- CUDA-capable NVIDIA GPU; 24 GB VRAM is recommended for training
 - Docker with NVIDIA Container Toolkit for container testing
 - Enough storage for the licensed RAW release and nnU-Net preprocessing cache
 
@@ -104,7 +96,7 @@ at exactly:
 data/raw/ATLAS3_Training_Raw/
 ```
 
-The expected encrypted archive SHA-256 and data inventory are documented in
+The expected archive identity and data inventory are documented in
 [`docs/dataset.md`](docs/dataset.md). Do not store the dataset encryption key
 in scripts, shell history, Docker layers, or Git.
 
@@ -118,12 +110,10 @@ hf download MIC-DKFZ/PrimusM-OpenMind-MAE checkpoint_final.pth \
   --local-dir external_models/PrimusM-OpenMind-MAE
 ```
 
-Expected paths and hashes:
-
-| Initialization | Local path | SHA-256 |
-|---|---|---|
-| ResEnc-L OpenMind-MAE | `external_models/ResEncL-OpenMind-MAE/checkpoint_final.pth` | `7a847af785635335c00e711d16ff4d225d86ecd5992b14c059df2b520e3ee933` |
-| Primus-M OpenMind-MAE | `external_models/PrimusM-OpenMind-MAE/checkpoint_final.pth` | `b866ac5f61d7e90d3a6cbb00a759ffc9d73beb5e63baa6b3cd654671ebc9a552` |
+| Initialization | Local path |
+|---|---|
+| ResEnc-L OpenMind-MAE | `external_models/ResEncL-OpenMind-MAE/checkpoint_final.pth` |
+| Primus-M OpenMind-MAE | `external_models/PrimusM-OpenMind-MAE/checkpoint_final.pth` |
 
 These checkpoints were pretrained without labels on the OpenMind/OpenNeuro
 brain-MRI collection. They are not derived from the ISLES validation or test
@@ -132,53 +122,42 @@ sets.
 ### 5. Generate the frozen split and preprocess
 
 ```bash
-bash scripts/run_v1.sh setup
-bash scripts/run_v1.sh plan
-bash scripts/run_v1.sh preprocess
+bash scripts/prepare_data.sh setup
+bash scripts/prepare_data.sh plan
+bash scripts/prepare_data.sh preprocess
 ```
 
 `setup` deterministically rebuilds the center-grouped five-fold split from the
-licensed release. The expected split SHA-256 is:
-
-```text
-da10108f65fdff2954c7f68f9e69456a5d9bb8f78b28512e3714656ba2bd9885
-```
-
-Generated manifests and patient-level split files remain local and are ignored
-by Git.
+licensed release. Generated manifests and patient-level split files remain
+local and are ignored by Git.
 
 ### 6. Train both full-data members
 
 ```bash
-bash scripts/run_full_final.sh
+bash scripts/train_strokefusion.sh
 ```
 
 The script performs the complete frozen procedure:
 
-1. train V12/ResEnc-L for 400 epochs on fold `all`;
-2. average checkpoints 300, 350, and 400 into E1-SWA;
-3. train V15/Primus-M for 400 epochs on fold `all`;
-4. average checkpoints 200, 250, and 300 into V15-SWA;
+1. train ResEnc-L RASS for 400 epochs on fold `all`;
+2. average epochs 300, 350, and 400 into ResEnc-L RASS SWA;
+3. train Primus-M Local-Refinement for 400 epochs on fold `all`;
+4. average epochs 200, 250, and 300 into Primus-M Local-Refinement SWA;
 5. persist both verified models under `outputs/final_full_models/`.
 
-Training is resumable from each member's `checkpoint_latest.pth`. The final
-checkpoints must match:
-
-| Model | Output | SHA-256 |
-|---|---|---|
-| E1-SWA | `outputs/final_full_models/checkpoint_E1_swa.pth` | `b974c29405011d4ddcb1850544c6d6fc054cc39544d3ada99b4b2808db88647b` |
-| V15-SWA | `outputs/final_full_models/checkpoint_V15_swa_e200_e250_e300.pth` | `98429330ea0e800d0ce9d38b446494343fdaeba04c7e83caa6a50ff032dc05d2` |
+Training resumes safely from each member's `checkpoint_latest.pth` when
+available.
 
 ## Released weights
 
 The download cells will be filled after the final weights are uploaded to
 Baidu Netdisk.
 
-| Artifact | Download | Extraction code | SHA-256 |
-|---|---|---|---|
-| E1-SWA checkpoint |  |  | `b974c29405011d4ddcb1850544c6d6fc054cc39544d3ada99b4b2808db88647b` |
-| V15-SWA checkpoint |  |  | `98429330ea0e800d0ce9d38b446494343fdaeba04c7e83caa6a50ff032dc05d2` |
-| Grand Challenge Model resource |  |  | `06c159dce3059f319f916d264c78b2b5e76e29456f91f907077c50520446ffd6` |
+| Artifact | Download | Extraction code |
+|---|---|---|
+| ResEnc-L RASS SWA checkpoint |  |  |
+| Primus-M Local-Refinement SWA checkpoint |  |  |
+| Grand Challenge Model resource |  |  |
 
 When the Model resource is available, place it at
 `submission_artifacts/model-postprocess.tar.gz` and restore the two checkpoint
@@ -188,17 +167,12 @@ files with:
 bash scripts/restore_final_models.sh
 ```
 
-### Verify the frozen release
-
-After downloading all licensed and released artifacts:
+After downloading all licensed and released artifacts, validate the frozen
+release with:
 
 ```bash
 bash scripts/verify_final_release.sh
 ```
-
-The verifier checks the RAW archive, generated split, public initialization,
-container/model resources, embedded checkpoint hashes, threshold, and frozen
-postprocessing contract.
 
 ## Grand Challenge inference container
 
@@ -208,14 +182,9 @@ and float probability map in the original geometry. Metadata is accepted for
 interface compatibility but is not used by the model.
 
 ```bash
-# Build the linux/amd64 algorithm image.
 cd docker
 bash do_build.sh
-
-# Place a local test case under docker/test/input/, then run with NVIDIA Docker.
 bash do_test_run.sh
-
-# Export the algorithm image and separate Model resource.
 bash do_save.sh
 ```
 
@@ -233,11 +202,11 @@ python scripts/evaluate_isles26.py --help
 python scripts/evaluate_probability_ensemble.py --help
 ```
 
-The retained fold-0 Rule-2 comparison is available in
-[`results/fold0_rule2.csv`](results/fold0_rule2.csv). The two published
-Preliminary cases are recorded in
-[`results/preliminary_metrics.json`](results/preliminary_metrics.json); they
-are used only as a container sanity check, not for model selection.
+The two published Preliminary cases are recorded in
+[`results/preliminary_metrics.json`](results/preliminary_metrics.json). They
+are used only as a container sanity check, not for model selection. The local
+model-comparison pool and case-level predictions are intentionally excluded
+because they are derived from the licensed training release.
 
 ## Reproducibility notes
 
@@ -246,7 +215,7 @@ are used only as a container sanity check, not for model selection.
 - RASS is training-only and does not modify the inference graph.
 - The two ensemble weights, threshold, and cleanup criteria are fixed.
 - The probability map is never altered by binary-mask postprocessing.
-- Complete immutable hashes and restoration instructions are in
+- Artifact verification and restoration instructions are in
   [`docs/reproducibility.md`](docs/reproducibility.md).
 
 ## References
@@ -259,8 +228,8 @@ are used only as a container sanity check, not for model selection.
 Citation information for the ISLES'26 challenge manuscript will be added after
 publication.
 
-## License and data use
+## License
 
-The source code is released under the [Apache License 2.0](LICENSE). The
-ISLES/ATLAS data are governed by their own terms and are not redistributed.
-Public pretrained checkpoints remain subject to their upstream licenses.
+This repository is released under the [Apache License 2.0](LICENSE). The
+ISLES'26 dataset and pretrained or trained weights remain subject to their own
+licenses and terms of use.

@@ -1,4 +1,4 @@
-"""ISLES'26 final E1 + V15-SWA native-space inference."""
+"""StrokeFusion native-space inference for ISLES'26."""
 
 from __future__ import annotations
 
@@ -106,7 +106,7 @@ def init_model() -> ModelBundle:
 
     if not torch.cuda.is_available():
         raise RuntimeError(
-            "E1+V15-SWA requires the challenge NVIDIA T4 GPU; "
+            "StrokeFusion requires the challenge NVIDIA T4 GPU; "
             "configure this algorithm image with a GPU instance"
         )
     print(
@@ -261,18 +261,30 @@ def run(model: ModelBundle) -> int:
         e1_stem.parent.mkdir(parents=True)
         v15_stem.parent.mkdir(parents=True)
 
-        _predict_member(model.e1, normalized_input, e1_stem, "E1-SWA")
+        _predict_member(
+            model.e1,
+            normalized_input,
+            e1_stem,
+            "ResEnc-L RASS SWA",
+        )
         e1_probability = _load_native_foreground(e1_stem)
-        _predict_member(model.v15, normalized_input, v15_stem, "V15-SWA")
+        _predict_member(
+            model.v15,
+            normalized_input,
+            v15_stem,
+            "Primus-M Local-Refinement SWA",
+        )
         v15_probability = _load_native_foreground(v15_stem)
 
         if e1_probability.shape != input_array.shape:
             raise ValueError(
-                f"E1/native shape mismatch: {e1_probability.shape} != {input_array.shape}"
+                "ResEnc-L/native shape mismatch: "
+                f"{e1_probability.shape} != {input_array.shape}"
             )
         if v15_probability.shape != input_array.shape:
             raise ValueError(
-                f"V15/native shape mismatch: {v15_probability.shape} != {input_array.shape}"
+                "Primus-M/native shape mismatch: "
+                f"{v15_probability.shape} != {input_array.shape}"
             )
 
         probability = np.clip(

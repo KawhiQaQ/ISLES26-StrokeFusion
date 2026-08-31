@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build the frozen V1 center-held-out, constrained-balanced five folds."""
+"""Build the frozen center-held-out, constrained-balanced five folds."""
 
 from __future__ import annotations
 
@@ -21,7 +21,7 @@ IMAGE_SUFFIX = "_space-orig_desc-brain_T1w.nii.gz"
 MASK_SUFFIX = "_space-orig_label-lesion_desc-T1lesion_mask.nii.gz"
 META_SUFFIX = "_metadata.csv"
 N_FOLDS = 5
-V1_SEED = 20260811
+FOLD_SEED = 20260811
 
 
 def parse_args() -> argparse.Namespace:
@@ -189,7 +189,7 @@ def optimize_groups(
     restarts: int,
     local_steps: int,
 ) -> tuple[np.ndarray, float]:
-    rng = np.random.default_rng(V1_SEED)
+    rng = np.random.default_rng(FOLD_SEED)
     target_features = group_features.sum(axis=0) / N_FOLDS
     target_size = float(group_features[:, 0].sum() / N_FOLDS)
     target_groups = float(len(group_features) / N_FOLDS)
@@ -361,14 +361,14 @@ def validate_and_export(frame: pd.DataFrame, output_dir: Path, objective_score: 
             raise AssertionError(f"fold {fold}: train/validation leakage")
         splits.append({"train": sorted(training), "val": sorted(validation)})
 
-    frame.to_csv(output_dir / "manifest_v1.csv", index=False)
+    frame.to_csv(output_dir / "manifest.csv", index=False)
     (output_dir / "splits_final.json").write_text(
         json.dumps(splits, indent=2) + "\n", encoding="utf-8"
     )
 
     summary: dict[str, object] = {
-        "version": "V1",
-        "seed": V1_SEED,
+        "split": "center_grouped_five_fold",
+        "seed": FOLD_SEED,
         "group": "CENTER/SITE",
         "objective_score": objective_score,
         "center_leakage": False,

@@ -1,4 +1,4 @@
-"""Inference-only architecture definition for the final V15 checkpoint."""
+"""Inference-only architecture for Primus-M Local-Refinement SWA."""
 
 import torch
 from dynamic_network_architectures.architectures.primus import Primus

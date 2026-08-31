@@ -29,10 +29,9 @@ verify() {
 }
 
 verify 62d55b2fe862961ec598ebe28ec8c9ae17711359d7e60475ef88e3785bcdeacc atlas3_training_raw.tar.gz
-verify da10108f65fdff2954c7f68f9e69456a5d9bb8f78b28512e3714656ba2bd9885 versions/V1/splits_final.json
+verify da10108f65fdff2954c7f68f9e69456a5d9bb8f78b28512e3714656ba2bd9885 data/derived/center_grouped_folds/splits_final.json
 verify 7a847af785635335c00e711d16ff4d225d86ecd5992b14c059df2b520e3ee933 external_models/ResEncL-OpenMind-MAE/checkpoint_final.pth
 verify b866ac5f61d7e90d3a6cbb00a759ffc9d73beb5e63baa6b3cd654671ebc9a552 external_models/PrimusM-OpenMind-MAE/checkpoint_final.pth
-verify 3a87ff03f71e4d05eb4e57e7bb4bf43716cf599612f9b0599c465ab07fff6484 submission_artifacts/isles26-e1-v15-swa-postprocess-fixed.tar.gz
 verify 06c159dce3059f319f916d264c78b2b5e76e29456f91f907077c50520446ffd6 submission_artifacts/model-postprocess.tar.gz
 
 python3 - "$workspace/submission_artifacts/model-postprocess.tar.gz" <<'PY'

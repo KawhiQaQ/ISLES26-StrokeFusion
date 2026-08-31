@@ -3,8 +3,8 @@ set -euo pipefail
 
 script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 workspace="${ISLES26_WORKSPACE:-$(cd -- "$script_dir/.." && pwd)}"
-version_dir="$workspace/versions/V15"
-v1_version_dir="$workspace/versions/V1"
+transformer_plan="$workspace/plans/primus_m_local_refinement.json"
+split_dir="$workspace/data/derived/center_grouped_folds"
 
 conda_exe="${ISLES_CONDA_EXE:-$(command -v conda || true)}"
 if [[ -z "$conda_exe" && -x /opt/conda/bin/conda ]]; then conda_exe=/opt/conda/bin/conda; fi
@@ -41,7 +41,7 @@ print(Path(nnunetv2.__file__).resolve().parent / "training" / "nnUNetTrainer")
 PY
 )"
 
-mkdir -p "$nnUNet_raw" "$nnUNet_preprocessed" "$nnUNet_results" "$version_dir"
+mkdir -p "$nnUNet_raw" "$nnUNet_preprocessed" "$nnUNet_results"
 
 verify_hash() {
   local file="$1"
@@ -56,12 +56,12 @@ verify_hash() {
 }
 
 install_inputs() {
-  verify_hash "$v1_version_dir/splits_final.json" "$expected_split_sha256" "frozen split"
-  install -m 0644 "$v1_version_dir/splits_final.json" "$preprocessed_dataset/splits_final.json"
+  verify_hash "$split_dir/splits_final.json" "$expected_split_sha256" "frozen split"
+  install -m 0644 "$split_dir/splits_final.json" "$preprocessed_dataset/splits_final.json"
   verify_hash "$preprocessed_dataset/splits_final.json" "$expected_split_sha256" "installed split"
-  verify_hash "$version_dir/${plans_name}.json" "$expected_plans_sha256" "V15 plans"
-  install -m 0644 "$version_dir/${plans_name}.json" "$preprocessed_dataset/${plans_name}.json"
-  verify_hash "$preprocessed_dataset/${plans_name}.json" "$expected_plans_sha256" "installed V15 plans"
+  verify_hash "$transformer_plan" "$expected_plans_sha256" "Primus-M plans"
+  install -m 0644 "$transformer_plan" "$preprocessed_dataset/${plans_name}.json"
+  verify_hash "$preprocessed_dataset/${plans_name}.json" "$expected_plans_sha256" "installed Primus-M plans"
   verify_hash "$pretrained_checkpoint" "$expected_pretrained_sha256" "Primus-M checkpoint"
 
   python -m py_compile \
@@ -86,7 +86,7 @@ fold="${2:-0}"
 case "$action" in
   smoke)
     install_inputs
-    python "$workspace/scripts/smoke_v15.py" --fold "$fold"
+    python "$workspace/scripts/smoke_primus_local_refinement.py" --fold "$fold"
     ;;
   train)
     install_inputs

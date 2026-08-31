@@ -1,4 +1,4 @@
-"""Inference-only architecture definition for the final E1 checkpoint."""
+"""Inference-only architecture definition for ResEnc-L RASS SWA."""
 
 from nnunetv2.training.nnUNetTrainer.variants.training_length.nnUNetTrainer_Xepochs import (
     nnUNetTrainer_250epochs,

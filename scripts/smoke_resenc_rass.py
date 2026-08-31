@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Bounded V12 launch check with the full optimizer state resident."""
+"""Bounded ResEnc-L RASS launch check with optimizer state resident."""
 
 from __future__ import annotations
 
@@ -96,9 +96,9 @@ def main() -> int:
     trainer.initialize()
     network = trainer._network_module()
     if trainer.enable_deep_supervision:
-        raise RuntimeError("V12 must preserve V9's no-deep-supervision recipe")
+        raise RuntimeError("ResEnc-L RASS must disable deep supervision")
     if trainer.configuration_manager.batch_size != 3:
-        raise RuntimeError("V12 worst-case check requires the planned batch size 3")
+        raise RuntimeError("ResEnc-L RASS check requires batch size 3")
 
     rotation, dummy_2d, _, mirror_axes = (
         trainer.configure_rotation_dummyDA_mirroring_and_inital_patch_size()
@@ -126,7 +126,7 @@ def main() -> int:
     if len(rass_wrappers) != 1:
         raise RuntimeError(f"expected one RASS transform, found {len(rass_wrappers)}")
     if not math.isclose(rass_wrappers[0].apply_probability, 0.30):
-        raise RuntimeError("unexpected V12 RASS probability")
+        raise RuntimeError("unexpected ResEnc-L RASS probability")
 
     # Force the most memory-intensive scheduled stage before any long run.
     trainer.optimizer, trainer.lr_scheduler = trainer.configure_optimizers("warmup_all")
@@ -151,7 +151,7 @@ def main() -> int:
             losses.append(float(output["loss"]))
         torch.cuda.synchronize()
         if not all(math.isfinite(loss) for loss in losses):
-            raise RuntimeError(f"non-finite V12 losses: {losses}")
+            raise RuntimeError(f"non-finite ResEnc-L RASS losses: {losses}")
         if not trainer.optimizer.state:
             raise RuntimeError("optimizer momentum state was not materialized")
         if torch.equal(audited_before, audited_parameter.detach()):
@@ -168,7 +168,7 @@ def main() -> int:
     print(
         json.dumps(
             {
-                "version": "V12",
+                "model": "ResEnc-L RASS",
                 "fold": args.fold,
                 "train_cases": len(train_keys),
                 "validation_cases": len(validation_keys),

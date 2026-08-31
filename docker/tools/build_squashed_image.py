@@ -28,7 +28,7 @@ LAYERS = (
     "7188d322ae797c2bca265d48e78d5f1c81edd057f4cd3c52aad290c85f41e37c",
     "6fcd771462b712c223b407a2db21d385f629f9b3e68f43237f547409d5eadb99",
 )
-TAG = "isles26-e1-v15-swa-final:latest"
+TAG = "isles26-strokefusion-final:latest"
 
 
 def sha256(path: Path) -> str:

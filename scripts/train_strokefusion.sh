@@ -34,31 +34,31 @@ run_or_resume() {
   fi
 }
 
-v12_dir="$full_results/Dataset026_ISLES26/nnUNetTrainerV12RASS__nnUNetResEncUNetLPlans__3d_fullres/fold_all"
-run_or_resume "$workspace/scripts/run_v12.sh" "$v12_dir" V12
+resenc_dir="$full_results/Dataset026_ISLES26/nnUNetTrainerV12RASS__nnUNetResEncUNetLPlans__3d_fullres/fold_all"
+run_or_resume "$workspace/scripts/train_resenc_rass.sh" "$resenc_dir" "ResEnc-L RASS"
 python "$workspace/scripts/build_checkpoint_swa.py" \
-  "$v12_dir/checkpoint_E1_swa.pth" \
-  "$v12_dir/checkpoint_epoch300.pth" \
-  "$v12_dir/checkpoint_epoch350.pth" \
-  "$v12_dir/checkpoint_epoch400.pth"
-install -m 0644 "$v12_dir/checkpoint_E1_swa.pth" "$durable_models/checkpoint_E1_swa.pth"
+  "$resenc_dir/checkpoint_E1_swa.pth" \
+  "$resenc_dir/checkpoint_epoch300.pth" \
+  "$resenc_dir/checkpoint_epoch350.pth" \
+  "$resenc_dir/checkpoint_epoch400.pth"
+install -m 0644 "$resenc_dir/checkpoint_E1_swa.pth" "$durable_models/checkpoint_E1_swa.pth"
 sha256sum "$durable_models/checkpoint_E1_swa.pth" > "$durable_models/checkpoint_E1_swa.sha256"
-echo "V12/E1 full-data artifact persisted"
+echo "ResEnc-L RASS SWA full-data artifact persisted"
 
-v15_dir="$full_results/Dataset026_ISLES26/nnUNetTrainerV15NativeRefinement__nnUNetResEncUNetLPlansV15__3d_fullres/fold_all"
-run_or_resume "$workspace/scripts/run_v15.sh" "$v15_dir" V15
+transformer_dir="$full_results/Dataset026_ISLES26/nnUNetTrainerV15NativeRefinement__nnUNetResEncUNetLPlansV15__3d_fullres/fold_all"
+run_or_resume "$workspace/scripts/train_primus_local_refinement.sh" "$transformer_dir" "Primus-M Local-Refinement"
 python "$workspace/scripts/build_checkpoint_swa.py" \
-  "$v15_dir/checkpoint_V15_swa_e200_e250_e300.pth" \
-  "$v15_dir/checkpoint_epoch200.pth" \
-  "$v15_dir/checkpoint_epoch250.pth" \
-  "$v15_dir/checkpoint_epoch300.pth"
+  "$transformer_dir/checkpoint_V15_swa_e200_e250_e300.pth" \
+  "$transformer_dir/checkpoint_epoch200.pth" \
+  "$transformer_dir/checkpoint_epoch250.pth" \
+  "$transformer_dir/checkpoint_epoch300.pth"
 install -m 0644 \
-  "$v15_dir/checkpoint_V15_swa_e200_e250_e300.pth" \
+  "$transformer_dir/checkpoint_V15_swa_e200_e250_e300.pth" \
   "$durable_models/checkpoint_V15_swa_e200_e250_e300.pth"
 sha256sum \
   "$durable_models/checkpoint_V15_swa_e200_e250_e300.pth" \
   > "$durable_models/checkpoint_V15_swa_e200_e250_e300.sha256"
-echo "V15-SWA full-data artifact persisted"
+echo "Primus-M Local-Refinement SWA full-data artifact persisted"
 
 date -Is > "$durable_models/TRAINING_COMPLETE"
 echo "FULL FINAL TRAINING COMPLETE"

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Minimal V15 start/backward and frozen-split check."""
+"""Minimal Primus-M Local-Refinement start/backward and split check."""
 
 from __future__ import annotations
 
@@ -72,7 +72,7 @@ def main() -> int:
     if overlap:
         raise RuntimeError(f"train/validation leakage: {sorted(overlap)[:5]}")
     if trainer.num_epochs != 400 or trainer.warmup_duration_whole_net != 15:
-        raise RuntimeError("V15 is not using its native 400-epoch schedule")
+        raise RuntimeError("Primus-M refinement must use its 400-epoch schedule")
     if not math.isclose(trainer.initial_lr, 1e-4):
         raise RuntimeError(f"unexpected initial LR: {trainer.initial_lr}")
     if list(trainer.configuration_manager.patch_size) != [160, 160, 160]:
@@ -82,14 +82,14 @@ def main() -> int:
 
     adapter_output = network.local_stem_refinement[4].weight
     if torch.count_nonzero(adapter_output).item() != 0:
-        raise RuntimeError("V15 local refinement is not zero initialized")
+        raise RuntimeError("Primus-M local refinement is not zero initialized")
     presence_output = network.token_presence_head.weight
     if torch.count_nonzero(presence_output).item() != 0:
-        raise RuntimeError("V15 token-presence head is not zero initialized")
+        raise RuntimeError("Primus-M token-presence head is not zero initialized")
     if not math.isclose(network.local_gate_amplitude, 0.25):
-        raise RuntimeError("unexpected V15 local gate amplitude")
+        raise RuntimeError("unexpected Primus-M local gate amplitude")
     if not math.isclose(trainer.token_presence_loss_weight, 0.05):
-        raise RuntimeError("unexpected V15 token-presence loss weight")
+        raise RuntimeError("unexpected Primus-M token-presence loss weight")
     encoder_parameter = next(network.eva.parameters())
     encoder_before = encoder_parameter.detach().clone()
     adapter_before = adapter_output.detach().clone()
@@ -106,7 +106,7 @@ def main() -> int:
         loss = float(result["loss"])
         torch.cuda.synchronize()
         if not math.isfinite(loss):
-            raise RuntimeError(f"non-finite V15 loss: {loss}")
+            raise RuntimeError(f"non-finite Primus-M refinement loss: {loss}")
         if torch.equal(encoder_before, encoder_parameter.detach()):
             raise RuntimeError("pretrained encoder did not update")
         if torch.equal(adapter_before, adapter_output.detach()):
@@ -118,14 +118,14 @@ def main() -> int:
         if not math.isfinite(segmentation_loss) or not math.isfinite(
             token_presence_loss
         ):
-            raise RuntimeError("non-finite V15 component loss")
+            raise RuntimeError("non-finite Primus-M component loss")
         trainer.optimizer.zero_grad(set_to_none=True)
         torch.cuda.empty_cache()
         trainer.network.eval()
         with torch.no_grad(), torch.autocast("cuda", enabled=True):
             inference_output = trainer.network(batch["data"].to("cuda"))
         if not isinstance(inference_output, torch.Tensor):
-            raise RuntimeError("V15 inference must return one segmentation tensor")
+            raise RuntimeError("Primus-M inference must return one segmentation tensor")
         peak_allocated = torch.cuda.max_memory_allocated() / 1024**3
         peak_reserved = torch.cuda.max_memory_reserved() / 1024**3
         batch_shape = list(batch["data"].shape)
@@ -138,7 +138,7 @@ def main() -> int:
     print(
         json.dumps(
             {
-                "version": "V15",
+                "model": "Primus-M Local-Refinement",
                 "fold": args.fold,
                 "train_cases": len(train_keys),
                 "validation_cases": len(validation_keys),

@@ -15,8 +15,8 @@
 set -euo pipefail
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
-DOCKER_IMAGE_TAG="isles26-e1-v15-swa-final"
-CONTAINER_NAME="isles26-e1-v15-swa-final_container"
+DOCKER_IMAGE_TAG="isles26-strokefusion-final"
+CONTAINER_NAME="isles26-strokefusion-final_container"
 
 INPUT_DIR="${SCRIPT_DIR}/test/input"
 OUTPUT_DIR="${SCRIPT_DIR}/test/output"

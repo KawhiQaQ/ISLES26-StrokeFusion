@@ -5,8 +5,8 @@ set -euo pipefail
 
 script_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 workspace=$(cd -- "$script_dir/.." && pwd)
-image_tag=isles26-e1-v15-swa-final
-image_output=${ISLES26_IMAGE_OUTPUT:-$workspace/submission_artifacts/isles26-e1-v15-swa-rebuilt.tar.gz}
+image_tag=isles26-strokefusion-final
+image_output=${ISLES26_IMAGE_OUTPUT:-$workspace/submission_artifacts/isles26-strokefusion-rebuilt.tar.gz}
 model_output=${ISLES26_MODEL_OUTPUT:-$workspace/submission_artifacts/model-rebuilt.tar.gz}
 
 for output in "$image_output" "$model_output"; do

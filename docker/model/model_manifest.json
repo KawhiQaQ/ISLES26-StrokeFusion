@@ -1,5 +1,5 @@
 {
-  "algorithm": "E1-SWA + V15-SWA",
+  "algorithm": "ResEnc-L RASS SWA + Primus-M Local-Refinement SWA",
   "ensemble": "fixed uniform foreground-probability mean",
   "threshold": 0.5,
   "postprocessing": "remove 6-connected components below 0.002 ml when component maximum foreground probability is below 0.65",

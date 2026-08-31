@@ -2,20 +2,20 @@
 
 ## Frozen resources
 
-Final algorithm: **E1-SWA + V15-SWA**, equal foreground-probability mean,
-mirror TTA, threshold 0.5, followed by the conservative low-confidence
-tiny-lesion cleanup. A 6-connected component is removed only when it is below
-0.002 ml and its maximum foreground probability is below 0.65. The probability
-map is unchanged.
+Final algorithm: **ResEnc-L RASS SWA + Primus-M Local-Refinement SWA**, equal
+foreground-probability mean, mirror test-time augmentation, threshold 0.5,
+followed by conservative low-confidence tiny-lesion cleanup. A 6-connected
+component is removed only when it is below 0.002 mL and its maximum foreground
+probability is below 0.65. The probability map is unchanged.
 
-| Grand Challenge resource | Local release asset | SHA-256 |
-|---|---|---|
-| Algorithm image | `submission_artifacts/isles26-e1-v15-swa-postprocess-fixed.tar.gz` | `3a87ff03f71e4d05eb4e57e7bb4bf43716cf599612f9b0599c465ab07fff6484` |
-| Model | `submission_artifacts/model-postprocess.tar.gz` | `06c159dce3059f319f916d264c78b2b5e76e29456f91f907077c50520446ffd6` |
+| Grand Challenge resource | Local release asset |
+|---|---|
+| Algorithm image | `submission_artifacts/isles26-strokefusion-rebuilt.tar.gz` |
+| Model | `submission_artifacts/model-rebuilt.tar.gz` |
 
 The image is `linux/amd64`, runs as a non-root user, listens on port 4743,
 implements the `invoke` API, and requires an NVIDIA GPU. Weights live in the
-separate Model resource and are verified by SHA-256 at container startup.
+separate Model resource and are verified when the container starts.
 
 ## Interfaces and resources
 
@@ -54,4 +54,4 @@ bash do_save.sh
 ```
 
 Before upload, run `bash scripts/verify_final_release.sh` from the repository
-root and compare the two release hashes above.
+root.

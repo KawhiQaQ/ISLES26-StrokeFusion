@@ -11,12 +11,8 @@ nnUNet_preprocessed/
 .cache/
 ISLES'26- Additional information.xlsx
 
-# Deterministic artifacts derived from the licensed training release. They are
-# generated locally by the provided scripts and must not be redistributed.
-versions/V1/manifest_v1.csv
-versions/V1/splits_final.json
-versions/V1/fold_summary.json
-versions/V11/component_centers_fold0.json
+# Deterministic artifacts derived from the licensed training release are
+# generated under data/derived/ and must not be redistributed.
 
 # Local challenge-administration and internal research records; these are not
 # part of the released algorithm implementation.
@@ -28,8 +24,12 @@ scripts/package_isles26_miccai_materials.sh
 # direct dependencies. Exploratory implementations remain available locally
 # but are intentionally not published as part of the submitted algorithm.
 configs/*
-!configs/V12.yaml
-!configs/V15.yaml
+!configs/resenc_rass.yaml
+!configs/primus_local_refinement.yaml
+
+plans/*
+!plans/resenc_l.json
+!plans/primus_m_local_refinement.json
 
 nnunet_extensions/*
 !nnunet_extensions/nnUNetTrainerV3UFL.py
@@ -42,37 +42,27 @@ scripts/*
 !scripts/audit_dataset.py
 !scripts/bootstrap_env.sh
 !scripts/build_checkpoint_swa.py
-!scripts/build_v1_folds.py
+!scripts/build_center_grouped_folds.py
 !scripts/evaluate_isles26.py
 !scripts/evaluate_probability_ensemble.py
 !scripts/package_final_model.sh
 !scripts/prepare_nnunet_dataset.py
+!scripts/prepare_data.sh
 !scripts/rank_isles26_model_pool_rule2.py
 !scripts/restore_final_models.sh
-!scripts/run_full_final.sh
-!scripts/run_v1.sh
-!scripts/run_v12.sh
-!scripts/run_v15.sh
-!scripts/smoke_v12.py
-!scripts/smoke_v15.py
+!scripts/smoke_primus_local_refinement.py
+!scripts/smoke_resenc_rass.py
+!scripts/train_primus_local_refinement.sh
+!scripts/train_resenc_rass.sh
+!scripts/train_strokefusion.sh
 !scripts/validate_checkpoint.py
 !scripts/verify_final_release.sh
 
 versions/*
-!versions/E1/
-!versions/V2/
-!versions/V12/
-!versions/V15/
-versions/E1/*
-!versions/E1/README.md
-versions/V2/*
-!versions/V2/README.md
-!versions/V2/nnUNetResEncUNetLPlans.json
-versions/V12/*
-!versions/V12/README.md
-versions/V15/*
-!versions/V15/README.md
-!versions/V15/nnUNetResEncUNetLPlansV15.json
+
+# Patient-derived local comparison summaries are reproducible from the
+# licensed data but are not redistributed.
+results/fold0_rule2.csv
 
 # Python / notebooks
 __pycache__/
@@ -89,10 +79,10 @@ __pycache__/
 *.pth
 wandb/
 
-# Grand Challenge binaries and local packaging work areas. Keep the small
-# submission README/checksum manifest tracked, but publish large artifacts as
-# release assets rather than Git blobs.
+# Grand Challenge binaries and local packaging work areas. Publish large
+# artifacts as release assets rather than Git blobs.
 submission_artifacts/*.tar.gz
+submission_artifacts/SHA256SUMS
 submission_artifacts/image_parts/
 submission_artifacts/image_staging/
 submission_artifacts/*_build.*/
