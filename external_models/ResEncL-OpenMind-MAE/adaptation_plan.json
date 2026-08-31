@@ -1,0 +1,109 @@
+{
+    "architecture_plans": {
+        "arch_class_name": "ResEncL",
+        "arch_kwargs": null,
+        "arch_kwargs_requiring_import": null
+    },
+    "pretrain_plan": {
+        "dataset_name": "Dataset745_OpenNeuro_v2",
+        "plans_name": "nnsslPlans",
+        "original_median_spacing_after_transp": [
+            1,
+            1,
+            1
+        ],
+        "image_reader_writer": "SimpleITKIO",
+        "transpose_forward": [
+            0,
+            1,
+            2
+        ],
+        "transpose_backward": [
+            0,
+            1,
+            2
+        ],
+        "configurations": {
+            "onemmiso": {
+                "data_identifier": "nnsslPlans_3d_fullres",
+                "preprocessor_name": "DefaultPreprocessor",
+                "spacing_style": "onemmiso",
+                "normalization_schemes": [
+                    "ZScoreNormalization"
+                ],
+                "use_mask_for_norm": [
+                    false
+                ],
+                "resampling_fn_data": "resample_data_or_seg_to_shape",
+                "resampling_fn_data_kwargs": {
+                    "is_seg": false,
+                    "order": 3,
+                    "order_z": 0,
+                    "force_separate_z": null
+                },
+                "resampling_fn_mask": "resample_data_or_seg_to_shape",
+                "resampling_fn_mask_kwargs": {
+                    "is_seg": true,
+                    "order": 1,
+                    "order_z": 0,
+                    "force_separate_z": null
+                },
+                "spacing": [
+                    1,
+                    1,
+                    1
+                ],
+                "patch_size": [
+                    160,
+                    160,
+                    160
+                ]
+            }
+        },
+        "experiment_planner_used": "FixedResEncUNetPlanner"
+    },
+    "pretrain_num_input_channels": 1,
+    "recommended_downstream_patchsize": [
+        160,
+        160,
+        160
+    ],
+    "key_to_encoder": "encoder.stages",
+    "key_to_stem": "encoder.stem",
+    "keys_to_in_proj": [
+        "encoder.stem.convs.0.conv",
+        "encoder.stem.convs.0.all_modules.0"
+    ],
+    "key_to_lpe": null,
+    "citations": [
+        {
+            "type": "Architecture",
+            "name": "ResEncL",
+            "bibtex_citations": [
+                "@inproceedings{isensee2024nnu,\n                title={nnu-net revisited: A call for rigorous validation in 3d medical image segmentation},\n                author={Isensee, Fabian and Wald, Tassilo and Ulrich, Constantin and Baumgartner, Michael and Roy, Saikat and Maier-Hein, Klaus and Jaeger, Paul F},\n                booktitle={International Conference on Medical Image Computing and Computer-Assisted Intervention},\n                pages={488--498},\n                year={2024},\n                organization={Springer}\n                }"
+            ]
+        },
+        {
+            "type": "Pretraining Method",
+            "name": "Masked Auto Encoder",
+            "bibtex_citations": [
+                "@article{wald2024revisiting,\n  title={Revisiting MAE pre-training for 3D medical image segmentation},\n  author={Wald, Tassilo and Ulrich, Constantin and Lukyanenko, Stanislav and Goncharov, Andrei and Paderno, Alberto and Maerkisch, Leander and J{\"a}ger, Paul F and Maier-Hein, Klaus},\n  journal={arXiv preprint arXiv:2410.23132},\n  year={2024}\n}"
+            ]
+        },
+        {
+            "type": "Pre-Training Dataset",
+            "name": "OpenMind",
+            "bibtex_citations": [
+                "@article{wald2024openmind,\n    title={An OpenMind for 3D medical vision self-supervised learning},\n    author={Wald, Tassilo and Ulrich, Constantin and Suprijadi, Jonathan and Ziegler, Sebastian and Nohel, Michal and Peretzke, Robin and K{\"o}hler, Gregor and Maier-Hein, Klaus H},\n    journal={arXiv preprint arXiv:2412.17041},\n    year={2024}\n    }\n    "
+            ]
+        },
+        {
+            "type": "Framework",
+            "name": "nnssl",
+            "bibtex_citations": [
+                "@article{wald2024revisiting,\n  title={Revisiting MAE pre-training for 3D medical image segmentation},\n  author={Wald, Tassilo and Ulrich, Constantin and Lukyanenko, Stanislav and Goncharov, Andrei and Paderno, Alberto and Maerkisch, Leander and J{\"a}ger, Paul F and Maier-Hein, Klaus},\n  journal={arXiv preprint arXiv:2410.23132},\n  year={2024}\n}"
+            ]
+        }
+    ],
+    "trainer_name": "BaseMAETrainer_BS8"
+}

@@ -1,0 +1,9 @@
+# StrokeFusion: Complementary Convolutional and Transformer Segmentation
+
+**Team kawhi00**
+
+StrokeFusion combines two complementary three-dimensional segmentation branches. The first is a large residual-encoder U-Net (ResEnc-L); the second is a Primus-M Transformer augmented with a low-rank local refinement path. Both encoders are initialized from public OpenMind masked-autoencoder checkpoints trained without labels on OpenNeuro brain MRI. The Primus-M branch retains the pretrained patch-stem representation and processes it through an 864-to-64 projection, a depthwise 3 × 3 × 3 convolution, and a zero-initialized 64-to-864 projection. A lesion-presence head gates this residual before the original Primus decoder. Its balanced token-level binary cross-entropy loss is added to Dice and cross-entropy segmentation loss with weight 0.05.
+
+Each branch operates on RAW, native-space T1-weighted MRI using nnU-Net v2 fingerprint-based planning, 1 mm isotropic resampling, foreground z-score normalization, and standard spatial and intensity augmentation. Random amplitude spectrum synthesis is applied to 30% of training patches to perturb acquisition-style Fourier amplitudes while preserving phase and background support. Both branches are trained for 400 epochs on all released training cases. Weight-space averaging combines ResEnc-L checkpoints from epochs 300, 350, and 400 and Primus-M checkpoints from epochs 200, 250, and 300.
+
+At inference, sliding-window predictions with mirror test-time augmentation are restored to the original image geometry. Foreground probabilities from both branches are averaged equally and submitted unchanged as the probability map. The binary mask uses a threshold of 0.5. A conservative cleanup removes a 6-connected component only when its volume is below 0.002 mL and its maximum foreground probability is below 0.65. Stroke metadata and center identity are not used as model inputs.

@@ -1,0 +1,70 @@
+version: V15
+description: Primus-M OpenMind-MAE with low-rank RAW patch-stem and global-token fusion
+parent_evidence: [V12, V14, L2GNet_AAAI2026]
+dataset:
+  id: 26
+  name: Dataset026_ISLES26
+  input: raw_native_skull_stripped_T1w
+validation:
+  folds: 5
+  group: CENTER
+  split_file: versions/V1/splits_final.json
+  split_sha256: da10108f65fdff2954c7f68f9e69456a5d9bb8f78b28512e3714656ba2bd9885
+  research_fold: 0
+  whole_case_interval_epochs: 50
+  official_metrics: [dice, lesion_f1, pr_auc, abs_volume_diff_ml, abs_lesion_count_diff]
+model:
+  framework: nnUNetv2
+  configuration: 3d_fullres
+  plans: nnUNetResEncUNetLPlansV15
+  trainer: nnUNetTrainerV15NativeRefinement
+  architecture: PrimusM_with_low_rank_local_stem_fusion
+  patch_size: [160, 160, 160]
+  batch_size: 2
+  epochs: 400
+  image_channels: [T1w]
+  deep_supervision: false
+  torch_compile: false
+  loss: original_DiceCE
+local_global_fusion:
+  local_source: pretrained_raw_patch_stem
+  global_source: final_transformer_token_grid
+  token_grid: [20, 20, 20]
+  adapter_channels: [864, 64, 864]
+  adapter_operator: per_token_linear_gemm
+  fusion: residual_add_before_published_decoder
+  expansion_initialization: zero
+pretraining:
+  model: MIC-DKFZ/PrimusM-OpenMind-MAE
+  corpus: OpenMind_OpenNeuro_only
+  labels_used: false
+  checkpoint_sha256: b866ac5f61d7e90d3a6cbb00a759ffc9d73beb5e63baa6b3cd654671ebc9a552
+  loaded_encoder_tensors: 371
+  loaded_stem_tensors: 2
+optimization:
+  optimizer: AdamW
+  initial_lr: 0.0001
+  weight_decay: 0.05
+  betas: [0.9, 0.98]
+  warmup_epochs: 15
+  schedule: one_native_400_epoch_polynomial_schedule_from_epoch0
+augmentation:
+  method: RASS
+  scope: training_only
+  probability: 0.30
+  alpha: 3.0
+  beta: 0.25
+  gamma: 2.0
+resources:
+  augmentation_workers_train: 4
+  augmentation_workers_validation: 2
+  scheduled_checkpoints: inference_only_without_optimizer_state
+  latest_checkpoint: fully_resumable
+selection:
+  first_gate_epoch: 50
+  fold0_goal:
+    dice: ">0.60"
+    other_metrics: comparable_strength_improvement
+  run_fold1_only_after_fold0_goal: true
+  run_fold2: false
+  pseudo_dice_for_selection: false

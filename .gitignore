@@ -1,0 +1,112 @@
+# Licensed dataset and generated artifacts
+atlas3_training_raw.tar.gz
+ATLAS_R3.0_raw.tar.gz
+data/
+outputs/
+output/
+logs/
+checkpoints/
+nnUNet_raw/
+nnUNet_preprocessed/
+.cache/
+ISLES'26- Additional information.xlsx
+
+# Deterministic artifacts derived from the licensed training release. They are
+# generated locally by the provided scripts and must not be redistributed.
+versions/V1/manifest_v1.csv
+versions/V1/splits_final.json
+versions/V1/fold_summary.json
+versions/V11/component_centers_fold0.json
+
+# Local challenge-administration and internal research records; these are not
+# part of the released algorithm implementation.
+docs/final-submission-checklist.md
+docs/research-log.md
+scripts/package_isles26_miccai_materials.sh
+
+# The public paper-style repository exposes the frozen final pipeline and its
+# direct dependencies. Exploratory implementations remain available locally
+# but are intentionally not published as part of the submitted algorithm.
+configs/*
+!configs/V12.yaml
+!configs/V15.yaml
+
+nnunet_extensions/*
+!nnunet_extensions/nnUNetTrainerV3UFL.py
+!nnunet_extensions/nnUNetTrainerV9OpenMindMAE.py
+!nnunet_extensions/nnUNetTrainerV12RASS.py
+!nnunet_extensions/nnUNetTrainerV14PrimusMAE.py
+!nnunet_extensions/nnUNetTrainerV15NativeRefinement.py
+
+scripts/*
+!scripts/audit_dataset.py
+!scripts/bootstrap_env.sh
+!scripts/build_checkpoint_swa.py
+!scripts/build_v1_folds.py
+!scripts/evaluate_isles26.py
+!scripts/evaluate_probability_ensemble.py
+!scripts/package_final_model.sh
+!scripts/prepare_nnunet_dataset.py
+!scripts/rank_isles26_model_pool_rule2.py
+!scripts/restore_final_models.sh
+!scripts/run_full_final.sh
+!scripts/run_v1.sh
+!scripts/run_v12.sh
+!scripts/run_v15.sh
+!scripts/smoke_v12.py
+!scripts/smoke_v15.py
+!scripts/validate_checkpoint.py
+!scripts/verify_final_release.sh
+
+versions/*
+!versions/E1/
+!versions/V2/
+!versions/V12/
+!versions/V15/
+versions/E1/*
+!versions/E1/README.md
+versions/V2/*
+!versions/V2/README.md
+!versions/V2/nnUNetResEncUNetLPlans.json
+versions/V12/*
+!versions/V12/README.md
+versions/V15/*
+!versions/V15/README.md
+!versions/V15/nnUNetResEncUNetLPlansV15.json
+
+# Python / notebooks
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+.venv/
+.conda/
+
+# Model and experiment artifacts
+*.ckpt
+*.pt
+*.pth
+wandb/
+
+# Grand Challenge binaries and local packaging work areas. Keep the small
+# submission README/checksum manifest tracked, but publish large artifacts as
+# release assets rather than Git blobs.
+submission_artifacts/*.tar.gz
+submission_artifacts/image_parts/
+submission_artifacts/image_staging/
+submission_artifacts/*_build.*/
+submission_artifacts/sanity_fold0_weights/
+submission_artifacts/LATEST_*_BUILD
+docker/test/output/
+docker/test/.staging_input/
+docker/test/.staging_output/
+docker/test/.staging_model/
+
+# Local secrets and machine-specific files
+.env
+*.key
+.DS_Store
+
+# Local literature-review scratch files
+tmp/

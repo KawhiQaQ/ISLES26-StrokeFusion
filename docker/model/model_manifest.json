@@ -1,0 +1,10 @@
+{
+  "algorithm": "E1-SWA + V15-SWA",
+  "ensemble": "fixed uniform foreground-probability mean",
+  "threshold": 0.5,
+  "postprocessing": "remove 6-connected components below 0.002 ml when component maximum foreground probability is below 0.65",
+  "sha256": {
+    "e1/fold_all/checkpoint_final.pth": "b974c29405011d4ddcb1850544c6d6fc054cc39544d3ada99b4b2808db88647b",
+    "v15/fold_all/checkpoint_final.pth": "98429330ea0e800d0ce9d38b446494343fdaeba04c7e83caa6a50ff032dc05d2"
+  }
+}

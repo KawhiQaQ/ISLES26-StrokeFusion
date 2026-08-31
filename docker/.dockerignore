@@ -1,0 +1,9 @@
+.git
+__pycache__
+*.pyc
+*.tar
+*.tar.gz
+model
+test/output
+test/.staging_input
+test/.staging_output

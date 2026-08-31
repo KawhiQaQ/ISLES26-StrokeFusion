@@ -1,0 +1,54 @@
+version: V12
+description: V9 plus training-only random amplitude spectrum synthesis
+parent_evidence: [V9, V11]
+dataset:
+  id: 26
+  name: Dataset026_ISLES26
+  input: raw_native_skull_stripped_T1w
+validation:
+  folds: 5
+  group: CENTER
+  split_file: versions/V1/splits_final.json
+  split_sha256: da10108f65fdff2954c7f68f9e69456a5d9bb8f78b28512e3714656ba2bd9885
+  research_fold: 0
+  whole_case_interval_epochs: 50
+  official_metrics: [dice, lesion_f1, pr_auc, abs_volume_diff_ml, abs_lesion_count_diff]
+model:
+  framework: nnUNetv2
+  configuration: 3d_fullres
+  plans: nnUNetResEncUNetLPlans
+  trainer: nnUNetTrainerV12RASS
+  architecture: ResidualEncoderUNet_L
+  patch_size: [160, 192, 160]
+  batch_size: 3
+  epochs: 400
+  image_channels: [T1w]
+  deep_supervision: false
+  torch_compile: false
+  loss: original_DiceCE
+pretraining:
+  model: MIC-DKFZ/ResEncL-OpenMind-MAE
+  corpus: OpenMind_OpenNeuro_only
+  labels_used: false
+  checkpoint_sha256: 7a847af785635335c00e711d16ff4d225d86ecd5992b14c059df2b520e3ee933
+augmentation:
+  method: RASS
+  scope: training_only
+  probability: 0.30
+  alpha: 3.0
+  beta: 0.25
+  gamma: 2.0
+  phase_preserved: true
+  inference_change: false
+resources:
+  augmentation_workers_train: 4
+  augmentation_workers_validation: 2
+  scheduled_checkpoints: inference_only_without_optimizer_state
+  latest_checkpoint: fully_resumable
+selection:
+  fold0_goal:
+    dice: ">0.60"
+    other_metrics: comparable_strength_improvement
+  run_fold1_only_after_fold0_goal: true
+  run_fold2: false
+  pseudo_dice_for_selection: false

@@ -1,0 +1,8 @@
+name: isles26
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - pip=25.1
+  - setuptools
+  - wheel

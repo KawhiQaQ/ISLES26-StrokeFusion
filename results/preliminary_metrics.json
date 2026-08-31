@@ -1,0 +1,56 @@
+{
+  "cases": {
+    "sub-r001s001_ses-1": {
+      "baseline": {
+        "pr_auc": 0.9568183027778712,
+        "dice": 0.8666112002999871,
+        "abs_volume_diff_ml": 7.438,
+        "abs_lesion_count_diff": 7,
+        "lesion_f1": 0.26666666666666666,
+        "positive_voxels": 81618
+      },
+      "clean_uncertain_min0002ml_p065": {
+        "pr_auc": 0.9568183027778712,
+        "dice": 0.8665647137407935,
+        "abs_volume_diff_ml": 7.445,
+        "abs_lesion_count_diff": 2,
+        "lesion_f1": 0.4,
+        "positive_voxels": 81611
+      }
+    },
+    "sub-soop0468_ses-1": {
+      "baseline": {
+        "pr_auc": 0.9949332037299834,
+        "dice": 0.9580981065635996,
+        "abs_volume_diff_ml": 0.33749585598731685,
+        "abs_lesion_count_diff": 0,
+        "lesion_f1": 1.0,
+        "positive_voxels": 203640
+      },
+      "clean_uncertain_min0002ml_p065": {
+        "pr_auc": 0.9949332037299834,
+        "dice": 0.9580981065635996,
+        "abs_volume_diff_ml": 0.33749585598731685,
+        "abs_lesion_count_diff": 0,
+        "lesion_f1": 1.0,
+        "positive_voxels": 203640
+      }
+    }
+  },
+  "summary": {
+    "baseline": {
+      "pr_auc": 0.9758757532539273,
+      "dice": 0.9123546534317933,
+      "abs_volume_diff_ml": 3.8877479279936584,
+      "abs_lesion_count_diff": 3.5,
+      "lesion_f1": 0.6333333333333333
+    },
+    "clean_uncertain_min0002ml_p065": {
+      "pr_auc": 0.9758757532539273,
+      "dice": 0.9123314101521965,
+      "abs_volume_diff_ml": 3.8912479279936587,
+      "abs_lesion_count_diff": 1.0,
+      "lesion_f1": 0.7
+    }
+  }
+}
