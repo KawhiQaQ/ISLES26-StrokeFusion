@@ -139,15 +139,11 @@ bash scripts/train_strokefusion.sh
 
 ## 权重下载
 
-最终权重上传至百度网盘后会补充下表。
-
 | 文件 | 下载链接 | 提取码 |
 |---|---|---|
-| ResEnc-L RASS SWA checkpoint |  |  |
-| Primus-M Local-Refinement SWA checkpoint |  |  |
-| Grand Challenge Model resource |  |  |
+| 完整 StrokeFusion 模型包（两个 SWA checkpoint、plans、metadata 及 Grand Challenge Model resource） | [百度网盘](https://pan.baidu.com/s/1U1IR3pC7o73z7Xe1IdFDdw?pwd=z6hx) | `z6hx` |
 
-获得 Model resource 后，将其放到
+下载 `model-postprocess.tar.gz` 后，将其放到
 `submission_artifacts/model-postprocess.tar.gz`，然后恢复两个 checkpoint：
 
 ```bash

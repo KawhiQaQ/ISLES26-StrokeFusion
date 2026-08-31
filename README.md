@@ -150,16 +150,11 @@ available.
 
 ## Released weights
 
-The download cells will be filled after the final weights are uploaded to
-Baidu Netdisk.
-
 | Artifact | Download | Extraction code |
 |---|---|---|
-| ResEnc-L RASS SWA checkpoint |  |  |
-| Primus-M Local-Refinement SWA checkpoint |  |  |
-| Grand Challenge Model resource |  |  |
+| Complete StrokeFusion model bundle (both SWA checkpoints, plans, metadata, and Grand Challenge Model resource) | [Baidu Netdisk](https://pan.baidu.com/s/1U1IR3pC7o73z7Xe1IdFDdw?pwd=z6hx) | `z6hx` |
 
-When the Model resource is available, place it at
+Place the downloaded `model-postprocess.tar.gz` at
 `submission_artifacts/model-postprocess.tar.gz` and restore the two checkpoint
 files with:
 
