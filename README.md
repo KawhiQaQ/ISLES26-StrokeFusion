@@ -37,10 +37,6 @@ a depthwise `3 × 3 × 3` convolution. A lesion-presence head gates this path an
 adds a `0.05`-weighted balanced token-level binary cross-entropy objective to
 the standard Dice and cross-entropy segmentation loss.
 
-Historical trainer class and checkpoint-directory names are retained
-internally for compatibility with the trained weights. They are implementation
-identifiers, not model names.
-
 ## Repository layout
 
 ```text
