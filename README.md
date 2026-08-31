@@ -22,11 +22,6 @@ ISLES'26 RAW/native-space release. Their foreground probabilities are averaged
 uniformly. A conservative confidence-aware cleanup is applied only to the
 binary mask; the submitted probability map remains unchanged.
 
-> This repository contains the complete training, evaluation, inference, and
-> Grand Challenge packaging code for the submitted algorithm. Licensed data,
-> pretrained checkpoints, final weights, and container archives are not stored
-> in Git.
-
 ## Method
 
 | Component | Frozen specification |
