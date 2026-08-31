@@ -196,8 +196,6 @@ python scripts/evaluate_probability_ensemble.py --help
 - Wald et al., [Primus: Enforcing Attention Usage for 3D Medical Image Segmentation](https://arxiv.org/abs/2503.01835), 2025.
 - Isensee et al., [nnU-Net Revisited: A Call for Rigorous Validation in 3D Medical Image Segmentation](https://arxiv.org/abs/2404.09556), 2024.
 
-ISLES'26 挑战赛论文发表后将补充正式引用信息。
-
 ## 许可证
 
 本仓库采用 [Apache License 2.0](LICENSE) 开源。ISLES'26 数据集、预训练权重和

@@ -211,9 +211,6 @@ because they are derived from the licensed training release.
 - Wald et al., [Primus: Enforcing Attention Usage for 3D Medical Image Segmentation](https://arxiv.org/abs/2503.01835), 2025.
 - Isensee et al., [nnU-Net Revisited: A Call for Rigorous Validation in 3D Medical Image Segmentation](https://arxiv.org/abs/2404.09556), 2024.
 
-Citation information for the ISLES'26 challenge manuscript will be added after
-publication.
-
 ## License
 
 This repository is released under the [Apache License 2.0](LICENSE). The
