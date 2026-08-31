@@ -27,7 +27,6 @@ export nnUNet_def_n_proc="${nnUNet_def_n_proc:-2}"
 mkdir -p "$nnUNet_raw" "$nnUNet_preprocessed" "$nnUNet_results" "$split_dir"
 
 action="${1:-}"
-fold="${2:-0}"
 
 case "$action" in
   setup)
@@ -55,26 +54,8 @@ case "$action" in
     cp "$split_dir/splits_final.json" \
       "$nnUNet_preprocessed/Dataset026_ISLES26/splits_final.json"
     ;;
-  smoke)
-    python "$workspace/scripts/smoke_v1.py" --fold "$fold"
-    ;;
-  train)
-    nnUNetv2_train 26 3d_fullres "$fold" \
-      -tr nnUNetTrainer_250epochs --npz
-    ;;
-  validate)
-    nnUNetv2_train 26 3d_fullres "$fold" \
-      -tr nnUNetTrainer_250epochs --val --npz
-    ;;
-  evaluate)
-    prediction_dir="$nnUNet_results/Dataset026_ISLES26/nnUNetTrainer_250epochs__nnUNetPlans__3d_fullres/fold_${fold}/validation"
-    python "$workspace/scripts/evaluate_isles26.py" \
-      "$split_dir/manifest.csv" "$prediction_dir" \
-      "$workspace/outputs/baseline/fold${fold}/metrics" --fold "$fold" \
-      --label-dir "$nnUNet_raw/Dataset026_ISLES26/labelsTr"
-    ;;
   *)
-    echo "usage: $0 {setup|plan|preprocess|smoke|train|validate|evaluate} [fold]" >&2
+    echo "usage: $0 {setup|plan|preprocess}" >&2
     exit 2
     ;;
 esac
