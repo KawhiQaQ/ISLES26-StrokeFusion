@@ -22,10 +22,10 @@ fi
 for required in \
     "$e1_source" \
     "$v15_source" \
-    "$workspace/reproducibility/model_metadata/e1/plans.json" \
-    "$workspace/reproducibility/model_metadata/e1/dataset.json" \
-    "$workspace/reproducibility/model_metadata/v15/plans.json" \
-    "$workspace/reproducibility/model_metadata/v15/dataset.json" \
+    "$workspace/docker/model/metadata/resenc_l/plans.json" \
+    "$workspace/docker/model/metadata/resenc_l/dataset.json" \
+    "$workspace/docker/model/metadata/primus_m/plans.json" \
+    "$workspace/docker/model/metadata/primus_m/dataset.json" \
     "$template_dir/model/model_manifest.json"
 do
     if [[ ! -f "$required" ]]; then
@@ -60,10 +60,10 @@ stage=$(mktemp -d "${TMPDIR:-/tmp}/isles26-final-model.XXXXXX")
 trap 'find "$stage" -depth -delete 2>/dev/null || true' EXIT
 mkdir -p "$stage/e1/fold_all" "$stage/v15/fold_all" "$stage/a_tarball_subdirectory"
 
-install -m 0644 "$workspace/reproducibility/model_metadata/e1/plans.json" "$stage/e1/plans.json"
-install -m 0644 "$workspace/reproducibility/model_metadata/e1/dataset.json" "$stage/e1/dataset.json"
-install -m 0644 "$workspace/reproducibility/model_metadata/v15/plans.json" "$stage/v15/plans.json"
-install -m 0644 "$workspace/reproducibility/model_metadata/v15/dataset.json" "$stage/v15/dataset.json"
+install -m 0644 "$workspace/docker/model/metadata/resenc_l/plans.json" "$stage/e1/plans.json"
+install -m 0644 "$workspace/docker/model/metadata/resenc_l/dataset.json" "$stage/e1/dataset.json"
+install -m 0644 "$workspace/docker/model/metadata/primus_m/plans.json" "$stage/v15/plans.json"
+install -m 0644 "$workspace/docker/model/metadata/primus_m/dataset.json" "$stage/v15/dataset.json"
 install -m 0644 "$e1_source" "$stage/e1/fold_all/checkpoint_final.pth"
 install -m 0644 "$v15_source" "$stage/v15/fold_all/checkpoint_final.pth"
 install -m 0644 "$template_dir/model/model_manifest.json" "$stage/model_manifest.json"

@@ -1,4 +1,4 @@
-"""V15: lesion-presence-gated local/global Primus-M refinement."""
+"""Lesion-presence-gated local/global Primus-M refinement."""
 
 from __future__ import annotations
 

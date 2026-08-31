@@ -4,7 +4,7 @@ set -euo pipefail
 script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 workspace="${ISLES26_WORKSPACE:-$(cd -- "$script_dir/.." && pwd)}"
 split_dir="$workspace/data/derived/center_grouped_folds"
-resenc_plan="$workspace/plans/resenc_l.json"
+resenc_plan="$workspace/configs/resenc_l_plans.json"
 
 conda_exe="${ISLES_CONDA_EXE:-$(command -v conda || true)}"
 if [[ -z "$conda_exe" && -x /opt/conda/bin/conda ]]; then conda_exe=/opt/conda/bin/conda; fi
@@ -32,7 +32,7 @@ expected_pretrained_sha256=7a847af785635335c00e711d16ff4d225d86ecd5992b14c059df2
 pretrained_checkpoint="$workspace/external_models/ResEncL-OpenMind-MAE/checkpoint_final.pth"
 plans_name=nnUNetResEncUNetLPlans
 trainer_name=nnUNetTrainerV12RASS
-extension_dir="$workspace/nnunet_extensions"
+extension_dir="$workspace/strokefusion/trainers"
 trainer_destination_dir="$(python - <<'PY'
 from pathlib import Path
 import nnunetv2

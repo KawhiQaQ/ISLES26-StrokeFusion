@@ -1,4 +1,4 @@
-"""V14: OpenMind-MAE initialized Primus-M with cross-center RASS."""
+"""OpenMind-MAE initialized Primus-M with cross-center RASS."""
 
 from __future__ import annotations
 

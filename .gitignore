@@ -10,36 +10,23 @@ nnUNet_raw/
 nnUNet_preprocessed/
 .cache/
 ISLES'26- Additional information.xlsx
+docs/
+external_models/
+nnunet_extensions/
+plans/
+reproducibility/
+results/
+versions/
 
-# Deterministic artifacts derived from the licensed training release are
-# generated under data/derived/ and must not be redistributed.
-
-# Local challenge-administration and internal research records; these are not
-# part of the released algorithm implementation.
-docs/final-submission-checklist.md
-docs/research-log.md
-scripts/package_isles26_miccai_materials.sh
-
-# The public paper-style repository exposes the frozen final pipeline and its
-# direct dependencies. Exploratory implementations remain available locally
-# but are intentionally not published as part of the submitted algorithm.
+# Publish only the frozen final configurations and runnable pipeline. Local
+# experiments remain in the workspace but are excluded from the paper repo.
 configs/*
 !configs/resenc_rass.yaml
 !configs/primus_local_refinement.yaml
-
-plans/*
-!plans/resenc_l.json
-!plans/primus_m_local_refinement.json
-
-nnunet_extensions/*
-!nnunet_extensions/nnUNetTrainerV3UFL.py
-!nnunet_extensions/nnUNetTrainerV9OpenMindMAE.py
-!nnunet_extensions/nnUNetTrainerV12RASS.py
-!nnunet_extensions/nnUNetTrainerV14PrimusMAE.py
-!nnunet_extensions/nnUNetTrainerV15NativeRefinement.py
+!configs/resenc_l_plans.json
+!configs/primus_m_local_refinement_plans.json
 
 scripts/*
-!scripts/audit_dataset.py
 !scripts/bootstrap_env.sh
 !scripts/build_checkpoint_swa.py
 !scripts/build_center_grouped_folds.py
@@ -48,21 +35,13 @@ scripts/*
 !scripts/package_final_model.sh
 !scripts/prepare_nnunet_dataset.py
 !scripts/prepare_data.sh
-!scripts/rank_isles26_model_pool_rule2.py
 !scripts/restore_final_models.sh
 !scripts/smoke_primus_local_refinement.py
 !scripts/smoke_resenc_rass.py
 !scripts/train_primus_local_refinement.sh
 !scripts/train_resenc_rass.sh
 !scripts/train_strokefusion.sh
-!scripts/validate_checkpoint.py
 !scripts/verify_final_release.sh
-
-versions/*
-
-# Patient-derived local comparison summaries are reproducible from the
-# licensed data but are not redistributed.
-results/fold0_rule2.csv
 
 # Python / notebooks
 __pycache__/

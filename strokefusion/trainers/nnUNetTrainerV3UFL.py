@@ -1,4 +1,4 @@
-"""V3: nnU-Net with asymmetric Unified Focal Loss and scheduled whole-case CV."""
+"""Base nnU-Net trainer with scheduled whole-case ISLES evaluation."""
 
 from __future__ import annotations
 

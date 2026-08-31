@@ -5,8 +5,8 @@ script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 workspace="${ISLES26_WORKSPACE:-$(cd -- "$script_dir/.." && pwd)}"
 raw_root="$workspace/data/raw/ATLAS3_Training_Raw"
 split_dir="$workspace/data/derived/center_grouped_folds"
-resenc_plan="$workspace/plans/resenc_l.json"
-transformer_plan="$workspace/plans/primus_m_local_refinement.json"
+resenc_plan="$workspace/configs/resenc_l_plans.json"
+transformer_plan="$workspace/configs/primus_m_local_refinement_plans.json"
 
 conda_exe="${ISLES_CONDA_EXE:-$(command -v conda || true)}"
 if [[ -z "$conda_exe" && -x /opt/conda/bin/conda ]]; then conda_exe=/opt/conda/bin/conda; fi

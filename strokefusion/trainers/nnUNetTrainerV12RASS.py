@@ -1,4 +1,4 @@
-"""V12: V9 with training-only random amplitude spectrum synthesis."""
+"""ResEnc-L training with random amplitude spectrum synthesis."""
 
 from __future__ import annotations
 

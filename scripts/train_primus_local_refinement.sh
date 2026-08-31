@@ -3,7 +3,7 @@ set -euo pipefail
 
 script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 workspace="${ISLES26_WORKSPACE:-$(cd -- "$script_dir/.." && pwd)}"
-transformer_plan="$workspace/plans/primus_m_local_refinement.json"
+transformer_plan="$workspace/configs/primus_m_local_refinement_plans.json"
 split_dir="$workspace/data/derived/center_grouped_folds"
 
 conda_exe="${ISLES_CONDA_EXE:-$(command -v conda || true)}"
@@ -33,7 +33,7 @@ expected_pretrained_sha256=b866ac5f61d7e90d3a6cbb00a759ffc9d73beb5e63baa6b3cd654
 pretrained_checkpoint="$workspace/external_models/PrimusM-OpenMind-MAE/checkpoint_final.pth"
 plans_name=nnUNetResEncUNetLPlansV15
 trainer_name=nnUNetTrainerV15NativeRefinement
-extension_dir="$workspace/nnunet_extensions"
+extension_dir="$workspace/strokefusion/trainers"
 trainer_destination_dir="$(python - <<'PY'
 from pathlib import Path
 import nnunetv2

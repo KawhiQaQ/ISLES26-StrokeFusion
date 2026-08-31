@@ -38,15 +38,10 @@ Transformer 细化模块以零初始化方式工作在原生 Primus token 网格
 ## 仓库结构
 
 ```text
-configs/                 冻结的模型与训练配置
-docker/                  Grand Challenge 推理容器
-docs/                    方法、评估、数据与提交说明
-external_models/         公开 OpenMind 预训练权重的预期位置
-nnunet_extensions/       StrokeFusion 使用的自定义 nnU-Net trainer
-plans/                    冻结的 nnU-Net 架构 plans
-reproducibility/         冻结的推理元数据
-results/                 精简的 Preliminary Evaluation 结果
-scripts/                 数据准备、训练、评估与打包脚本
+configs/         冻结的模型配置与 nnU-Net plans
+docker/          Grand Challenge 推理容器
+scripts/         数据准备、训练、评估与打包脚本
+strokefusion/    StrokeFusion 使用的自定义 nnU-Net trainer
 ```
 
 ## 复现最终方法
@@ -83,8 +78,8 @@ conda activate isles26
 data/raw/ATLAS3_Training_Raw/
 ```
 
-归档身份和数据清单见 [`docs/dataset.md`](docs/dataset.md)。请勿将数据集解密
-密钥写入脚本、Shell 历史、Docker layer 或 Git。
+该版本包含 1,453 个 T1 图像、病灶掩码和元数据文件。请勿将数据集解密密钥
+写入脚本、Shell 历史、Docker layer 或 Git。
 
 ### 4. 下载公开的自监督初始化权重
 
@@ -163,8 +158,7 @@ bash do_test_run.sh
 bash do_save.sh
 ```
 
-输入输出接口、资源限制和打包约定见 [`docker/README.md`](docker/README.md)
-与 [`docs/submission.md`](docs/submission.md)。
+输入输出接口、资源限制和打包约定见 [`docker/README.md`](docker/README.md)。
 
 ## 评估
 
@@ -175,10 +169,8 @@ python scripts/evaluate_isles26.py --help
 python scripts/evaluate_probability_ensemble.py --help
 ```
 
-两个公开 Preliminary 病例的结果记录在
-[`results/preliminary_metrics.json`](results/preliminary_metrics.json)。它们仅用于
-检查容器合规和推理一致性，不用于选模。由受许可训练数据生成的本地模型比较池
-和逐病例预测不会公开。
+两个公开 Preliminary 病例仅用于检查容器合规和推理一致性，不用于选模。
+由受许可训练数据生成的本地模型比较池和逐病例预测不会公开。
 
 ## 可复现性说明
 
@@ -187,7 +179,7 @@ python scripts/evaluate_probability_ensemble.py --help
 - RASS 只在训练时启用，不改变推理图。
 - 两个成员的融合权重、阈值和清理条件均已冻结。
 - 二值掩码后处理不会修改概率图。
-- 文件验证与恢复说明见 [`docs/reproducibility.md`](docs/reproducibility.md)。
+- 使用 `scripts/verify_final_release.sh` 校验发布的模型文件。
 
 ## 参考文献
 

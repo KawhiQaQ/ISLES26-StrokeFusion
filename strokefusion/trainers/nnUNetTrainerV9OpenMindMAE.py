@@ -1,4 +1,4 @@
-"""V9: OpenMind MAE initialized ResEnc-L with published sawtooth adaptation."""
+"""OpenMind-MAE initialization for the ResEnc-L segmentation branch."""
 
 from __future__ import annotations
 

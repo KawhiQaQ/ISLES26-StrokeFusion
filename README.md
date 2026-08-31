@@ -40,15 +40,10 @@ the standard Dice and cross-entropy segmentation loss.
 ## Repository layout
 
 ```text
-configs/                 frozen model and training specifications
-docker/                  Grand Challenge inference container
-docs/                    method, evaluation, dataset, and submission details
-external_models/         expected locations for public OpenMind checkpoints
-nnunet_extensions/       custom nnU-Net trainers used by StrokeFusion
-plans/                    frozen nnU-Net architecture plans
-reproducibility/         frozen inference metadata
-results/                 compact Preliminary Evaluation summary
-scripts/                 preparation, training, evaluation, and packaging tools
+configs/         frozen model configurations and nnU-Net plans
+docker/          Grand Challenge inference container
+scripts/         data preparation, training, evaluation, and packaging
+strokefusion/    custom nnU-Net trainers used by StrokeFusion
 ```
 
 ## Reproduce the final method
@@ -87,9 +82,9 @@ at exactly:
 data/raw/ATLAS3_Training_Raw/
 ```
 
-The expected archive identity and data inventory are documented in
-[`docs/dataset.md`](docs/dataset.md). Do not store the dataset encryption key
-in scripts, shell history, Docker layers, or Git.
+The release contains 1,453 T1 images, lesion masks, and metadata files. Do not
+store the dataset encryption key in scripts, shell history, Docker layers, or
+Git.
 
 ### 4. Download the public self-supervised initialization
 
@@ -174,8 +169,7 @@ bash do_test_run.sh
 bash do_save.sh
 ```
 
-See [`docker/README.md`](docker/README.md) and
-[`docs/submission.md`](docs/submission.md) for the exact input/output sockets,
+See [`docker/README.md`](docker/README.md) for the exact input/output sockets,
 resource limits, and packaging contract.
 
 ## Evaluation
@@ -188,11 +182,10 @@ python scripts/evaluate_isles26.py --help
 python scripts/evaluate_probability_ensemble.py --help
 ```
 
-The two published Preliminary cases are recorded in
-[`results/preliminary_metrics.json`](results/preliminary_metrics.json). They
-are used only as a container sanity check, not for model selection. The local
-model-comparison pool and case-level predictions are intentionally excluded
-because they are derived from the licensed training release.
+The two published Preliminary cases are used only as a container sanity check,
+not for model selection. The local model-comparison pool and case-level
+predictions are not distributed because they are derived from the licensed
+training release.
 
 ## Reproducibility notes
 
@@ -201,8 +194,7 @@ because they are derived from the licensed training release.
 - RASS is training-only and does not modify the inference graph.
 - The two ensemble weights, threshold, and cleanup criteria are fixed.
 - The probability map is never altered by binary-mask postprocessing.
-- Artifact verification and restoration instructions are in
-  [`docs/reproducibility.md`](docs/reproducibility.md).
+- Released model files are checked by `scripts/verify_final_release.sh`.
 
 ## References
 
