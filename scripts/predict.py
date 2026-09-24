@@ -24,7 +24,12 @@ def parse_args() -> argparse.Namespace:
             "from one native-space T1 MRI. An NVIDIA CUDA GPU is required."
         )
     )
-    parser.add_argument("--input", required=True, type=Path, help=".nii.gz, .nii, or .mha T1 MRI")
+    parser.add_argument(
+        "--input",
+        required=True,
+        type=Path,
+        help=".nii.gz, .nii, or .mha T1 MRI",
+    )
     parser.add_argument("--output-dir", required=True, type=Path)
     parser.add_argument(
         "--model-archive",
@@ -45,7 +50,10 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--skip-model-verification",
         action="store_true",
-        help="skip the archive checksum pass (checkpoint hashes are still checked at load time)",
+        help=(
+            "skip the archive checksum pass "
+            "(checkpoint hashes are still checked at load time)"
+        ),
     )
     return parser.parse_args()
 
@@ -104,7 +112,9 @@ def main() -> int:
     segmentation_path, probability_path = _output_paths(
         output_dir, args.output_format
     )
-    existing = [path for path in (segmentation_path, probability_path) if path.exists()]
+    existing = [
+        path for path in (segmentation_path, probability_path) if path.exists()
+    ]
     if existing and not args.overwrite:
         raise FileExistsError(
             f"refusing to overwrite existing outputs: {existing}; pass --overwrite"
@@ -137,7 +147,9 @@ def main() -> int:
         if args.metadata is None:
             metadata = {}
         else:
-            metadata = json.loads(args.metadata.expanduser().read_text(encoding="utf-8"))
+            metadata = json.loads(
+                args.metadata.expanduser().read_text(encoding="utf-8")
+            )
         (input_dir / "stroke-metadata.json").write_text(
             json.dumps(metadata), encoding="utf-8"
         )
