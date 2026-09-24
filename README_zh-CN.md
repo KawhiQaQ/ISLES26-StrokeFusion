@@ -52,7 +52,7 @@ strokefusion/    StrokeFusion 使用的自定义 nnU-Net trainer
 - Conda 或 Miniforge
 - Python 3.11
 - 支持 CUDA 的 NVIDIA GPU；训练建议至少 24 GB 显存
-- 容器测试需要 Docker 与 NVIDIA Container Toolkit
+- 仅在测试 Grand Challenge 容器时需要 Docker 与 NVIDIA Container Toolkit
 - 足够存放受许可 RAW 数据和 nnU-Net 预处理缓存的磁盘空间
 
 提交的推理容器以 16 GB 显存的 NVIDIA T4 GPU 为目标环境。
@@ -60,16 +60,45 @@ strokefusion/    StrokeFusion 使用的自定义 nnU-Net trainer
 ### 2. 克隆仓库并创建环境
 
 ```bash
-git clone git@github.com:KawhiQaQ/ISLES26-StrokeFusion.git
+git clone https://github.com/KawhiQaQ/ISLES26-StrokeFusion.git
 cd ISLES26-StrokeFusion
 
-bash scripts/bootstrap_env.sh isles26
+bash scripts/bootstrap_env.sh isles26 --core
 conda activate isles26
 ```
 
-精简依赖见 `requirements-core.txt`，完整参考环境见 `environment.lock.txt`。
+精简依赖见 `requirements-core.txt`，可移植的完整参考环境见
+`environment.lock.txt`。需要严格复现环境时，可将 `--core` 改为
+`--locked`；日常使用建议保留较小的 `--core` 安装。
 
-### 3. 准备官方 RAW 数据
+### 3. 使用发布权重直接推理
+
+从下方[权重下载](#权重下载)表下载 `model-postprocess.tar.gz`，并放置为：
+
+```text
+submission_artifacts/model-postprocess.tar.gz
+```
+
+先验证模型包、内部 checkpoint、metadata 与冻结输出约定：
+
+```bash
+python scripts/verify_inference_release.py
+```
+
+无需 Grand Challenge 接口即可直接推理一例原生空间 T1 MRI：
+
+```bash
+python scripts/predict.py \
+  --input /path/to/t1_brain_mri.nii.gz \
+  --output-dir predictions/case001
+```
+
+输出为原始图像几何下的 `stroke-lesion-segmentation.nii.gz` 和
+`lesion-probability-map.nii.gz`。冻结模型不使用卒中 metadata；如需保持接口一致，
+可通过 `--metadata` 传入 JSON。输出格式和覆盖选项见
+`python scripts/predict.py --help`。推理需要 NVIDIA CUDA GPU。
+
+### 4. 准备官方 RAW 数据
 
 下载并解压官方 ISLES'26/ATLAS R3.0 **RAW** 训练数据。不要使用标准化或预处理
 版本。将解压目录放置为：
@@ -81,7 +110,7 @@ data/raw/ATLAS3_Training_Raw/
 该版本包含 1,453 个 T1 图像、病灶掩码和元数据文件。请勿将数据集解密密钥
 写入脚本、Shell 历史、Docker layer 或 Git。
 
-### 4. 下载公开的自监督初始化权重
+### 5. 下载公开的自监督初始化权重
 
 ```bash
 hf download MIC-DKFZ/ResEncL-OpenMind-MAE checkpoint_final.pth \
@@ -99,7 +128,7 @@ hf download MIC-DKFZ/PrimusM-OpenMind-MAE checkpoint_final.pth \
 这些权重在 OpenMind/OpenNeuro 脑 MRI 集合上进行无标签预训练，并非来自
 ISLES 验证集或测试集。
 
-### 5. 生成冻结划分并预处理
+### 6. 生成冻结划分并预处理
 
 ```bash
 bash scripts/prepare_data.sh setup
@@ -110,7 +139,7 @@ bash scripts/prepare_data.sh preprocess
 `setup` 会根据受许可数据确定性重建按中心分组的五折划分。生成的 manifest、
 病例级划分文件和预处理缓存均保留在本地，并由 Git 忽略。
 
-### 6. 在全量数据上训练两个成员
+### 7. 在全量数据上训练两个成员
 
 ```bash
 bash scripts/train_strokefusion.sh
@@ -139,11 +168,17 @@ bash scripts/train_strokefusion.sh
 bash scripts/restore_final_models.sh
 ```
 
+如果只需要推理，无需执行恢复步骤：`scripts/predict.py` 和 Docker 测试脚本会
+直接使用经过校验的模型归档。
+
 下载全部受许可和公开文件后，可验证冻结版本：
 
 ```bash
 bash scripts/verify_final_release.sh
 ```
+
+完整校验会同时检查受许可 RAW 归档、冻结划分和公开初始化权重。只进行推理的
+用户应改用 `python scripts/verify_inference_release.py`。
 
 ## Grand Challenge 推理容器
 

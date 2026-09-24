@@ -118,7 +118,7 @@ nvidia-nvshmem-cu13==3.4.5
 nvidia-nvtx==13.0.85
 omegaconf==2.3.1
 overrides==7.7.0
-packaging @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_packaging_1785888127/work
+packaging==25.0
 pandas==2.3.3
 pandocfilters==1.5.1
 panoptica==2.1.6

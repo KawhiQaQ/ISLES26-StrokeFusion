@@ -1,5 +1,7 @@
 torch==2.13.0
 torchvision==0.28.0
+timm==1.0.22
+huggingface-hub==1.27.0
 monai==1.6.0
 nnunetv2==2.8.1
 connected-components-3d==3.29.0

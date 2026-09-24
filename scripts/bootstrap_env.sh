@@ -3,6 +3,19 @@ set -euo pipefail
 
 PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 ENV_NAME="${1:-isles26}"
+INSTALL_MODE="${2:---core}"
+case "$INSTALL_MODE" in
+  --core)
+    REQUIREMENTS_FILE="$PROJECT_DIR/requirements-core.txt"
+    ;;
+  --locked)
+    REQUIREMENTS_FILE="$PROJECT_DIR/environment.lock.txt"
+    ;;
+  *)
+    echo "usage: $0 [environment-name] [--core|--locked]" >&2
+    exit 2
+    ;;
+esac
 CONDA_EXE_PATH="${ISLES_CONDA_EXE:-$(command -v conda || true)}"
 if [[ -z "$CONDA_EXE_PATH" && -x /opt/conda/bin/conda ]]; then
   CONDA_EXE_PATH=/opt/conda/bin/conda
@@ -20,6 +33,7 @@ else
 fi
 
 PIP_NO_CACHE_DIR=1 "$CONDA_EXE_PATH" run -n "$ENV_NAME" \
-  python -m pip install -r "$PROJECT_DIR/requirements-core.txt"
+  python -m pip install -r "$REQUIREMENTS_FILE"
 
-echo "Environment ready. Activate with: conda activate $ENV_NAME"
+echo "Environment ready from $(basename "$REQUIREMENTS_FILE")."
+echo "Activate with: conda activate $ENV_NAME"

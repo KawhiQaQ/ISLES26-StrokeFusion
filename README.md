@@ -54,7 +54,7 @@ strokefusion/    custom nnU-Net trainers used by StrokeFusion
 - Conda or Miniforge
 - Python 3.11
 - CUDA-capable NVIDIA GPU; 24 GB VRAM is recommended for training
-- Docker with NVIDIA Container Toolkit for container testing
+- Docker with NVIDIA Container Toolkit only for Grand Challenge container testing
 - Enough storage for the licensed RAW release and nnU-Net preprocessing cache
 
 The submitted inference container targets an NVIDIA T4 GPU with 16 GB VRAM.
@@ -62,17 +62,49 @@ The submitted inference container targets an NVIDIA T4 GPU with 16 GB VRAM.
 ### 2. Clone and create the environment
 
 ```bash
-git clone git@github.com:KawhiQaQ/ISLES26-StrokeFusion.git
+git clone https://github.com/KawhiQaQ/ISLES26-StrokeFusion.git
 cd ISLES26-StrokeFusion
 
-bash scripts/bootstrap_env.sh isles26
+bash scripts/bootstrap_env.sh isles26 --core
 conda activate isles26
 ```
 
 The concise dependency specification is in `requirements-core.txt`; the
-resolved reference environment is retained in `environment.lock.txt`.
+portable resolved reference environment is retained in `environment.lock.txt`.
+Use `--locked` instead of `--core` when an exact reproduction environment is
+preferred over the smaller installation.
 
-### 3. Prepare the licensed RAW data
+### 3. Run inference with the released model
+
+Download `model-postprocess.tar.gz` from the [released-weights table](#released-weights)
+and place it at:
+
+```text
+submission_artifacts/model-postprocess.tar.gz
+```
+
+Verify the complete archive, embedded checkpoints, metadata, and frozen output
+contract:
+
+```bash
+python scripts/verify_inference_release.py
+```
+
+Run one native-space T1 MRI directly, without the Grand Challenge interface:
+
+```bash
+python scripts/predict.py \
+  --input /path/to/t1_brain_mri.nii.gz \
+  --output-dir predictions/case001
+```
+
+The command writes `stroke-lesion-segmentation.nii.gz` and
+`lesion-probability-map.nii.gz`, both in the original image geometry. Stroke
+metadata is not used by the frozen models; an optional JSON file can be passed
+with `--metadata` for interface parity. Use `python scripts/predict.py --help`
+for output-format and overwrite options. An NVIDIA CUDA GPU is required.
+
+### 4. Prepare the licensed RAW data
 
 Download and extract the official ISLES'26/ATLAS R3.0 **RAW** training release.
 The standardized/preprocessed archive is not used. Place the extracted folder
@@ -86,7 +118,7 @@ The release contains 1,453 T1 images, lesion masks, and metadata files. Do not
 store the dataset encryption key in scripts, shell history, Docker layers, or
 Git.
 
-### 4. Download the public self-supervised initialization
+### 5. Download the public self-supervised initialization
 
 ```bash
 hf download MIC-DKFZ/ResEncL-OpenMind-MAE checkpoint_final.pth \
@@ -105,7 +137,7 @@ These checkpoints were pretrained without labels on the OpenMind/OpenNeuro
 brain-MRI collection. They are not derived from the ISLES validation or test
 sets.
 
-### 5. Generate the frozen split and preprocess
+### 6. Generate the frozen split and preprocess
 
 ```bash
 bash scripts/prepare_data.sh setup
@@ -117,7 +149,7 @@ bash scripts/prepare_data.sh preprocess
 licensed release. Generated manifests and patient-level split files remain
 local and are ignored by Git.
 
-### 6. Train both full-data members
+### 7. Train both full-data members
 
 ```bash
 bash scripts/train_strokefusion.sh
@@ -148,12 +180,19 @@ files with:
 bash scripts/restore_final_models.sh
 ```
 
+For inference-only use, restoration is unnecessary: `scripts/predict.py` and
+the Docker test runner consume the verified archive directly.
+
 After downloading all licensed and released artifacts, validate the frozen
 release with:
 
 ```bash
 bash scripts/verify_final_release.sh
 ```
+
+This full verifier intentionally also checks the licensed RAW archive, frozen
+split, and public initialization checkpoints. Inference-only users should run
+`python scripts/verify_inference_release.py` instead.
 
 ## Grand Challenge inference container
 

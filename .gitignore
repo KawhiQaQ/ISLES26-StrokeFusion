@@ -36,6 +36,8 @@ scripts/*
 !scripts/prepare_nnunet_dataset.py
 !scripts/prepare_data.sh
 !scripts/restore_final_models.sh
+!scripts/predict.py
+!scripts/verify_inference_release.py
 !scripts/smoke_primus_local_refinement.py
 !scripts/smoke_resenc_rass.py
 !scripts/train_primus_local_refinement.sh
